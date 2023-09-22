@@ -54,7 +54,23 @@ dev:
     open:
       - url: http://localhost:3000/
     workingDir: /app
-    command: ["yarn", "dev"]
+    command: ["yarn","dev"]
+
+  apisix:
+    labelSelector:
+      app.kubernetes.io/name: apisix
+    devImage: apache/apisix
+    ports:
+      - port: "9080"
+
+  apisix-dashboard:
+    labelSelector:
+      app.kubernetes.io/name: apisix-dashboard
+    devImage: apache/apisix-dashboard
+    ports:
+      - port: "9000"
+    open:
+      - url: http://localhost:9000/
 
 pipelines:
   build: |-
@@ -67,4 +83,8 @@ pipelines:
     create_deployments apisix
     create_deployments apisix-dashboard
   dev: |-
+    start_dev apisix
+    start_dev apisix-dashboard
     start_dev frontend
+
+
