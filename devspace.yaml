@@ -1,0 +1,65 @@
+version: v2beta1
+name: devspcae-magi-project
+
+
+localRegistry:
+  enabled: true
+  port: 30146
+  namespace: magi
+
+images:
+  frontend:
+    image: docker.io/magi/frontend
+    dockerfile: ./src/frontend/Dockerfile
+    context: ./src/frontend
+    tags:
+    - dev-latest-2
+    skipPush: false
+    docker:
+      preferMinikube: true
+
+deployments:
+  frontend:
+    helm:
+      chart:
+        path: ./helm-charts/frontend
+      valuesFiles:
+        - ./helm-charts/frontend/values.yaml
+  ngnix:
+    helm:
+      chart:
+        name: nginx
+        repo: https://charts.bitnami.com/bitnami
+       
+
+
+dev:
+  frontend:
+    imageSelector: docker.io/magi/frontend
+    container: frontend
+    sync:
+    - path: ./src/frontend:/app
+      startContainer: true 
+      onUpload:
+        restartContainer: false
+      excludeFile: ./.gitignore
+      uploadExcludePaths:
+       - node_modules
+    ports:
+       - port: "3000" 
+    open:
+      - url: http://localhost:3000/ 
+    workingDir: /app
+    command: ["yarn","dev"]
+
+pipelines:
+  build: |-
+    build_images --all
+  build-frontend: |-
+    build_images frontend
+  deploy: |-
+    create_deployments --all 
+  dev: |-
+    start_dev frontend
+
+   

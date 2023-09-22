@@ -1,0 +1,13 @@
+
+replicaCount: 1
+image:
+  repository: localhost:30146/magi/frontend
+  tag: "dev-latest-2"
+  pullPolicy: IfNotPresent
+
+service:
+  name: frontend-service
+  type: ClusterIP
+  port: 80
+  targetPort: 3000
+
