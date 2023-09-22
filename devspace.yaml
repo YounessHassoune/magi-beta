@@ -1,7 +1,6 @@
 version: v2beta1
 name: devspcae-magi-project
 
-
 localRegistry:
   enabled: true
   port: 30146
@@ -13,7 +12,7 @@ images:
     dockerfile: ./src/frontend/Dockerfile
     context: ./src/frontend
     tags:
-    - dev-latest-2
+      - dev-latest-2
     skipPush: false
     docker:
       preferMinikube: true
@@ -25,32 +24,37 @@ deployments:
         path: ./helm-charts/frontend
       valuesFiles:
         - ./helm-charts/frontend/values.yaml
-  ngnix:
+
+  apisix:
     helm:
       chart:
-        name: nginx
-        repo: https://charts.bitnami.com/bitnami
-       
+        name: apisix
+        repo: https://charts.apiseven.com
 
+  apisix-dashboard:
+    helm:
+      chart:
+        name: apisix-dashboard
+        repo: https://charts.apiseven.com
 
 dev:
   frontend:
     imageSelector: docker.io/magi/frontend
     container: frontend
     sync:
-    - path: ./src/frontend:/app
-      startContainer: true 
-      onUpload:
-        restartContainer: false
-      excludeFile: ./.gitignore
-      uploadExcludePaths:
-       - node_modules
+      - path: ./src/frontend:/app
+        startContainer: true
+        onUpload:
+          restartContainer: false
+        excludeFile: ./.gitignore
+        uploadExcludePaths:
+          - node_modules
     ports:
-       - port: "3000" 
+      - port: "3000"
     open:
-      - url: http://localhost:3000/ 
+      - url: http://localhost:3000/
     workingDir: /app
-    command: ["yarn","dev"]
+    command: ["yarn", "dev"]
 
 pipelines:
   build: |-
@@ -58,8 +62,9 @@ pipelines:
   build-frontend: |-
     build_images frontend
   deploy: |-
-    create_deployments --all 
+    create_deployments --all
+  deploy-apisix: |-
+    create_deployments apisix
+    create_deployments apisix-dashboard
   dev: |-
     start_dev frontend
-
-   
