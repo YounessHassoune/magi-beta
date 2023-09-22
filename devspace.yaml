@@ -12,7 +12,7 @@ images:
     dockerfile: ./src/frontend/Dockerfile
     context: ./src/frontend
     tags:
-      - dev-latest-2
+      - dev-latest-3
     skipPush: false
     docker:
       preferMinikube: true
@@ -24,13 +24,11 @@ deployments:
         path: ./helm-charts/frontend
       valuesFiles:
         - ./helm-charts/frontend/values.yaml
-
   apisix:
     helm:
       chart:
         name: apisix
         repo: https://charts.apiseven.com
-
   apisix-dashboard:
     helm:
       chart:
@@ -86,5 +84,11 @@ pipelines:
     start_dev apisix
     start_dev apisix-dashboard
     start_dev frontend
+
+  setup: |-
+    run_pipelines build-frontend deploy dev  --sequential 
+
+
+
 
 

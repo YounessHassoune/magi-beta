@@ -2,7 +2,7 @@
 replicaCount: 1
 image:
   repository: localhost:30146/magi/frontend
-  tag: "dev-latest-2"
+  tag: "dev-latest-3"
   pullPolicy: IfNotPresent
 
 service:
